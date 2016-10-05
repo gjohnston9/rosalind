@@ -1,10 +1,16 @@
 # Mortal Fibonacci Rabbits
-# not finished***
+
+from collections import defaultdict
 
 with open("in.txt", "r") as infile, open("out.txt", "w") as outfile:
 	line = infile.readline()
 	n, m = map(int, line.split())
-	rabbits = [1] * n
-	for i in range(2, m-1):
-		rabbits[i] = rabbits[i-1] + k * rabbits[i-2]
-	outfile.write(str(rabbits[n-1]))
+	f = defaultdict(lambda : 0) # map month to number of rabbits
+	f[2] = 1
+	f[1] = 1
+	f[0] = 1
+
+	for i in range(3, n+1):
+		f[i] = f[i-1] + f[i-2] - f[i-(m+1)]
+
+	outfile.write(str(f[n]))
