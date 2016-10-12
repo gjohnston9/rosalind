@@ -13,4 +13,4 @@ Organization
 ============
 
 - Files are named according to their ID on [rosalind.info](http://rosalind.info). So for example, `dna.py` is my solution to the problem found at [rosalind.info/problems/dna/](http://rosalind.info/problems/dna/)
-- Files are also organized into directories based on the locations of their corresponding problems on the website (Bioinformatics Stronghold, Bioinformatics Textbook Track, etc.)
+- Files are also organized into directories based on the locations of their corresponding problems on the website ([Bioinformatics Stronghold](http://rosalind.info/problems/list-view/?location=bioinformatics-stronghold), [Bioinformatics Textbook Track](http://rosalind.info/problems/list-view/?location=bioinformatics-textbook-track), etc.)

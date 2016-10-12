@@ -1,7 +1,5 @@
 # Calculating Expected Offspring
 
-from Bio import SeqIO
-
 with open("in.txt", "r") as infile, open("out.txt", "w") as outfile:
 	num_couples = infile.readline().strip("\n")
 	num_couples = map(float, num_couples.split())
