@@ -30,15 +30,115 @@ class SuffixTreeNode:
 		returns either:
 		a) None, meaning that this node contains the longest path from the
 		root which matches a prefix of next_string, and the path ends exactly at this node; or
-		b) a node, meaning that the longest path from the root that matches a prefix
+		b) a tuple of (node, index), meaning that the longest path from the root that matches a prefix
 		of next_string starts at the root but ends at the middle of the edge between the root and
-		the returned node
+		the returned node, at the returned index
 		"""
 		for child in self.children:
-			if child.string[child.start : child.end].startswith(next_string):
-				return child
+			diff = min(i for i, (ch1, ch2) in enumerate(zip(child.string[child.start : child.end],
+				next_string)) if ch1 != ch2) # get first index of difference
+			if diff != 0:
+				return child, diff
 		return None
 
+
+	def split(self, parent, index):
+		"""
+		split (at the given index) the edge going into this node, and return the intermediate node.
+		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+		example1 for split(self, 3):
+
+		before:
+		[parent]
+		   |
+		   |
+		   |
+		[self] (start=0, end=6)
+
+		after:
+		[parent]
+		   |
+		   |
+		   |
+		[new_node] (start=0, end=3) <-- returned
+		   |
+		   |
+		   |
+		[self] (start=3, end=6)
+
+		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+		example2 for split(self, 3):
+
+		before:
+		[parent]
+		   |
+		   |
+		   |
+		[self] (start=0, end=5)
+		   |
+		   |
+		   |
+		[other] (start=5, end=6)
+
+		after:
+		[parent]
+		   |
+		   |
+		   |
+		[new_node] (start=0, end=3) <-- returned
+		   |
+		   |
+		   |
+		[self] (start=3, end=5)
+		   |
+		   |
+		   |
+		[other] (start=5, end=6)
+
+		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+		example3 for split(self, 3):
+
+		before:
+						[parent]
+						   |
+						   |
+						   |
+						[self] (start=0, end=7)
+						  / \
+						 /   \
+						/     \
+					   /	   \
+					  /     [other] (start=7, end=9)
+					 /
+					/
+				[other2] (start=10, end=12)
+
+		after:
+						[parent]
+						   |
+						   |
+						   |
+						[new_node] (start=0, end=3) <-- returned
+						   |
+						   |
+						   |
+						[self] (start=3, end=7)
+						  / \
+						 /   \
+						/     \
+					   /	   \
+					  /     [other] (start=7, end=9)
+					 /
+					/
+				[other2] (start=10, end=12)
+		"""
+		new_child = SuffixTreeNode(self.string, self.start, index, -1)
+		parent.add_child(new_child)
+		self.start = index
+		return new_child
 
 	def __str__(self, level=0):
 		ret = "\t"*level + "{}; {}~{}; {}\n".format(self.suffix_index, self.start, self.end,
@@ -62,7 +162,7 @@ def suffix_tree_naive(string, end_char="$"):
 		if nxt == None:
 			root.add_child(SuffixTreeNode(string, i, m, i))
 		else:
-			print "split the edge here~"
+			split = nxt.split(root, index?)
 	return root
 
 
