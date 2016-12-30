@@ -1,3 +1,5 @@
+import pdb
+
 # note: some of the structure for SuffixTreeNode is taken from here:
 # http://www.geeksforgeeks.org/ukkonens-suffix-tree-construction-part-6/
 
@@ -24,22 +26,31 @@ class SuffixTreeNode:
 	def add_child(self, child):
 		self.children.add(child)
 
+	def remove_child(self, child):
+		self.children.remove(child)
+
 
 	def get_next(self, next_string):
 		"""
 		returns either:
-		a) None, meaning that this node contains the longest path from the
+		a) a tuple of (None, -1), meaning that this node contains the longest path from the
 		root which matches a prefix of next_string, and the path ends exactly at this node; or
 		b) a tuple of (node, index), meaning that the longest path from the root that matches a prefix
 		of next_string starts at the root but ends at the middle of the edge between the root and
 		the returned node, at the returned index
 		"""
+		# print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+		# print "next_string: {}".format(next_string)
 		for child in self.children:
+			# print "~~~~~~~~~~"
+			# print "string: {}\nstart: {}\nend: {}".format(child.string[child.start : child.end], child.start, child.end)
 			diff = min(i for i, (ch1, ch2) in enumerate(zip(child.string[child.start : child.end],
 				next_string)) if ch1 != ch2) # get first index of difference
+			# this set should never be empty if the string for which the suffix tree is being
+			# constructed has a unique final character
 			if diff != 0:
 				return child, diff
-		return None
+		return None, -1
 
 
 	def split(self, parent, index):
@@ -135,8 +146,11 @@ class SuffixTreeNode:
 					/
 				[other2] (start=10, end=12)
 		"""
-		new_child = SuffixTreeNode(self.string, self.start, index, -1)
+		new_child = SuffixTreeNode(self.string, self.start, index, -1) # create intermediate node
+		parent.remove_child(self)
 		parent.add_child(new_child)
+		new_child.add_child(self) # parent -> new_child -> self
+
 		self.start = index
 		return new_child
 
@@ -158,15 +172,16 @@ def suffix_tree_naive(string, end_char="$"):
 	root = SuffixTreeNode(string, -1, -1, -1)
 	root.add_child(SuffixTreeNode(string, 0, m, 0)) # add edge for suffix S[0:m]
 	for i in range(1, m): # add suffix S[i:m] for 1 <= i < m
-		nxt = root.get_next(string[i:m])
-		if nxt == None:
+		node, index = root.get_next(string[i:m])
+		if node == None:
 			root.add_child(SuffixTreeNode(string, i, m, i))
 		else:
-			split = nxt.split(root, index?)
+			split = node.split(root, index)
+			split.add_child(SuffixTreeNode(string, m - index + 1, m, -1))
 	return root
 
-
-test = suffix_tree_naive("xab")
+pdb.set_trace()
+test = suffix_tree_naive("xabxa")
 print test
 
 
